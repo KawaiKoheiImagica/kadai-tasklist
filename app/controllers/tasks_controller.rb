@@ -1,10 +1,23 @@
 class TasksController < ApplicationController
+  before_action :require_user_logged_in, only: [:new,:show,:edit,:update]
   def index
-    @tasks=Task.all.page(params[:page])
+    @tasks=Task.all.page
+    #@tasks=Task.find(params[:id])
+    if logged_in?
+      @user = current_user
+      @task = current_user.tasks.build  # form_for 用
+      @tasks = current_user.tasks.order('created_at DESC').page(params[:page])
+    end
   end
   
   def show
+    #idid
     set_task
+    if @task.user_id != session[:user_id]
+      redirect_to login_url
+    end
+    
+    
   end
   
   def new
@@ -12,7 +25,7 @@ class TasksController < ApplicationController
   end
   
   def create
-    @task=Task.new(task_params)
+    @task = current_user.tasks.build(task_params)
     
     if @task.save
       flash[:success]='Taskが正常に作成されました'
@@ -25,6 +38,9 @@ class TasksController < ApplicationController
   
   def edit
     set_task
+    if @task.user_id != session[:user_id]
+      redirect_to login_url
+    end
   end
   
   def update
@@ -54,5 +70,9 @@ def set_task
 end
 
 def task_params
-  params.require(:task).permit(:content,:status)
+  params.require(:task).permit(:content,:status,:user_id)
+end
+
+def func
+  
 end
