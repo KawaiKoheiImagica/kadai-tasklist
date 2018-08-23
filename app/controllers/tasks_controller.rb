@@ -1,7 +1,8 @@
 class TasksController < ApplicationController
-  before_action :require_user_logged_in, only: [:new,:show,:edit,:update]
+  before_action :require_user_logged_in, only: [:new,:show,:edit,:update,:create,:update
+  ]
   def index
-    @tasks=Task.all.page
+    #@tasks=Task.all.page
     #@tasks=Task.find(params[:id])
     if logged_in?
       @user = current_user
@@ -13,10 +14,7 @@ class TasksController < ApplicationController
   def show
     #idid
     set_task
-    if @task.user_id != session[:user_id]
-      redirect_to login_url
-    end
-    
+    user_check
     
   end
   
@@ -38,13 +36,12 @@ class TasksController < ApplicationController
   
   def edit
     set_task
-    if @task.user_id != session[:user_id]
-      redirect_to login_url
-    end
+    user_check
   end
   
   def update
     set_task
+    user_check
     
     if @task.update(task_params)
       flash[:success]='Taskは正常に更新されました'
@@ -57,22 +54,26 @@ class TasksController < ApplicationController
   
   def destroy
     set_task
+    user_check
     @task.destroy
     
     flash[:success]='Taskは正常に削除されました'
     redirect_to tasks_url
   end
-end
 
-private
-def set_task
-  @task = Task.find(params[:id])
-end
-
-def task_params
-  params.require(:task).permit(:content,:status,:user_id)
-end
-
-def func
+  private
+  def set_task
+    @task = Task.find(params[:id])
+  end
   
+  def task_params
+    params.require(:task).permit(:content,:status,:user_id)
+  end
+  
+  def user_check
+    if @task.user_id != session[:user_id]
+      redirect_to root_url
+    end
+  end
 end
+
