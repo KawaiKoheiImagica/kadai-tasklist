@@ -1,6 +1,9 @@
 class TasksController < ApplicationController
   before_action :require_user_logged_in, only: [:new,:show,:edit,:update,:create,:update
   ]
+  before_action :set_task, only: [:show, :edit, :update, :destroy]
+  
+  before_action :user_check, only:[:show, :edit, :update, :destroy]
   def index
     #@tasks=Task.all.page
     #@tasks=Task.find(params[:id])
@@ -13,8 +16,8 @@ class TasksController < ApplicationController
   
   def show
     #idid
-    set_task
-    user_check
+    #set_task
+    #user_check
     
   end
   
@@ -35,13 +38,13 @@ class TasksController < ApplicationController
   end
   
   def edit
-    set_task
-    user_check
+    #set_task
+    #user_check
   end
   
   def update
-    set_task
-    user_check
+    #set_task
+    #user_check
     
     if @task.update(task_params)
       flash[:success]='Taskは正常に更新されました'
@@ -53,8 +56,8 @@ class TasksController < ApplicationController
   end
   
   def destroy
-    set_task
-    user_check
+    #set_task
+    #user_check
     @task.destroy
     
     flash[:success]='Taskは正常に削除されました'
